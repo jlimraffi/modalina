@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="icon" href="./favicon.png" type="image/png">
+<link rel="stylesheet" href="./classical.css">
+<script src="./image-slot.js"></script>
+<style>
+  html, body { background: var(--color-bg); }
+  body::before {
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(120% 90% at 50% -10%, color-mix(in srgb, var(--color-accent-100) 40%, transparent) 0%, transparent 55%),
+      radial-gradient(100% 80% at 100% 110%, color-mix(in srgb, var(--color-accent-100) 26%, transparent) 0%, transparent 60%),
+      repeating-linear-gradient(45deg, rgba(120,100,60,0.018) 0 2px, transparent 2px 4px),
+      repeating-linear-gradient(-45deg, rgba(120,100,60,0.015) 0 2px, transparent 2px 4px);
+  }
+  .mag-slot::part(frame){ border-radius:0; }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-900); }
+  #contact input::placeholder, #contact textarea::placeholder { color: rgba(255,255,255,0.4); }
+  #contact select option { color: #201f1d; }
+  @keyframes modaFade { from { opacity:0; transform: translateY(8px);} to {opacity:1; transform:none;} }
+  @keyframes modaSpin { to { transform: rotate(360deg); } }
+</style>
+</helmet>
+
+<div style="min-height:100vh; position:relative; z-index:1; color: var(--color-text);">
+
+  <!-- ══════════ HOME ══════════ -->
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+  <div>
+
+    <header style="position:relative; background:#0d0c0b; display:flex; align-items:center; justify-content:space-between; padding:16px 40px; gap:24px;">
+      <img src="./uploads/MODALINA_Logo_Orange_TM_Full.svg" alt="Modalina" style="display:block; height:44px; width:auto; filter:brightness(0) invert(1);">
+      <nav style="{{ navStyle }}">
+        <div style="position:relative;" onMouseEnter="{{ megaOpen }}" onMouseLeave="{{ megaClose }}">
+          <a href="#issues" style="display:inline-block; padding:10px 0; font-family:var(--font-body); font-size:12px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:#fff; text-decoration:none;" style-hover="color:var(--color-accent-300);">The Issues</a>
+          <sc-if value="{{ megaVisible }}" hint-placeholder-val="{{ false }}">
+            <div style="position:fixed; left:0; right:0; top:76px; z-index:200; background:#0d0c0b; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); box-shadow:0 24px 48px rgba(0,0,0,0.45); max-height:calc(100dvh - 76px); overflow-y:auto; overscroll-behavior:contain;">
+              <div style="{{ megaGridStyle }}">
+                <sc-for list="{{ issues }}" as="iss" hint-placeholder-count="7">
+                  <div onClick="{{ iss.open }}" style="cursor:pointer;">
+                    <div style="position:relative; aspect-ratio:3/4; overflow:hidden; background:rgba(255,255,255,0.06); margin-bottom:10px;">
+                      <image-slot class="mag-slot" id="{{ iss.megaId }}" src="{{ iss.coverSrc }}" shape="rect" fit="cover" placeholder=""></image-slot>
+                    </div>
+                    <div style="font-family:var(--font-body); font-size:9.5px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(255,255,255,0.55); font-variant-numeric:tabular-nums;">{{ iss.no }} &middot; {{ iss.season }}</div>
+                    <div style="font-family:var(--font-heading); font-size:17px; font-weight:500; line-height:1.1; margin-top:3px; color:#fff; transition:color .25s;" style-hover="color:var(--color-accent-300);">{{ iss.title }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        <a href="#contact" style="font-family:var(--font-body); font-size:12px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:#fff; text-decoration:none;" style-hover="color:var(--color-accent-300);">Write to Us</a>
+      </nav>
+      <button onClick="{{ toggleMobNav }}" aria-label="Menu" style="{{ burgerStyle }}">
+        <span style="display:block; width:22px; height:2px; background:#fff;"></span>
+        <span style="display:block; width:22px; height:2px; background:#fff;"></span>
+        <span style="display:block; width:22px; height:2px; background:#fff;"></span>
+      </button>
+      <sc-if value="{{ mobNavVisible }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute; top:100%; left:0; right:0; z-index:300; background:#0d0c0b; border-top:1px solid rgba(255,255,255,0.12); border-bottom:1px solid rgba(255,255,255,0.12); display:flex; flex-direction:column; max-height:calc(100dvh - 90px); overflow-y:auto; -webkit-overflow-scrolling:touch; overscroll-behavior:contain;">
+          <button onClick="{{ toggleMobIssues }}" style="all:unset; cursor:pointer; box-sizing:border-box; width:100%; padding:18px 26px; display:flex; align-items:center; justify-content:space-between; font-family:var(--font-body); font-size:12px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:#fff; border-bottom:1px solid rgba(255,255,255,0.08);">The Issues <span style="font-size:16px; color:var(--color-accent-300);">{{ mobIssuesGlyph }}</span></button>
+          <sc-if value="{{ mobIssuesVisible }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px 10px; padding:16px 20px 20px; border-bottom:1px solid rgba(255,255,255,0.08);">
+              <sc-for list="{{ issues }}" as="iss" hint-placeholder-count="7">
+                <div onClick="{{ iss.openMob }}" style="cursor:pointer; min-width:0;">
+                  <div style="position:relative; aspect-ratio:3/4; overflow:hidden; background:rgba(255,255,255,0.06); margin-bottom:6px;">
+                    <image-slot class="mag-slot" id="{{ iss.mobMegaId }}" src="{{ iss.coverSrc }}" shape="rect" fit="cover" placeholder=""></image-slot>
+                  </div>
+                  <div style="font-family:var(--font-body); font-size:8px; letter-spacing:0.12em; text-transform:uppercase; color:rgba(255,255,255,0.55); font-variant-numeric:tabular-nums; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ iss.no }} &middot; {{ iss.season }}</div>
+                  <div style="font-family:var(--font-heading); font-size:13px; font-weight:500; line-height:1.15; margin-top:2px; color:#fff;">{{ iss.title }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <a href="#contact" onClick="{{ closeMobNav }}" style="padding:18px 26px; font-family:var(--font-body); font-size:12px; font-weight:600; letter-spacing:0.22em; text-transform:uppercase; color:#fff; text-decoration:none;">Write to Us</a>
+        </div>
+      </sc-if>
+    </header>
+
+    <!-- hero banner -->
+    <div style="position:relative; height:{{ heroBannerH }}; min-height:420px; overflow:hidden; background:var(--color-neutral-900);">
+      {{ heroEl }}
+      <div style="position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 34%, transparent 60%);"></div>
+      <div style="position:absolute; left:48px; bottom:88px; color:#fff;">
+        <div style="font-family:var(--font-body); font-size:12px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.85); margin-bottom:10px; font-variant-numeric:tabular-nums;">{{ heroMeta }}</div>
+        <h1 style="margin:0; font-size:clamp(52px, 7vw, 104px); font-weight:500; line-height:0.95; letter-spacing:-0.01em; color:#fff;">{{ heroTitle }}</h1>
+      </div>
+      <div style="position:absolute; left:50px; bottom:40px; display:flex; gap:12px;">
+        <sc-for list="{{ heroDots }}" as="dot" hint-placeholder-count="7">
+          <button onClick="{{ dot.pick }}" title="{{ dot.title }}" style="{{ dot.style }}"></button>
+        </sc-for>
+      </div>
+      <a href="#issues" style="position:absolute; left:50%; bottom:34px; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:6px; font-family:var(--font-body); font-size:13px; font-weight:600; letter-spacing:0.32em; text-transform:uppercase; color:#fff; text-decoration:none;" style-hover="color:var(--color-accent-300);">
+        Explore
+        <svg width="18" height="10" viewBox="0 0 18 10" fill="none" aria-hidden="true"><path d="M1 1l8 8 8-8" stroke="currentColor" stroke-width="1.5"></path></svg>
+      </a>
+    </div>
+
+    <!-- section title -->
+    <div style="max-width:1180px; margin:0 auto; padding:clamp(40px, 8vw, 96px) 32px clamp(32px, 6vw, 72px); text-align:center;">
+      <h2 style="margin:0; font-size:clamp(34px, 4vw, 56px); font-weight:500; line-height:1.1; letter-spacing:-0.01em; text-wrap:balance;">Discover the people, stories, and defining moments behind every cover.</h2>
+      <div style="display:flex; align-items:center; justify-content:center; gap:20px; margin-top:28px;">
+        <span style="width:48px; height:1px; background:var(--color-accent-500);"></span>
+        <span style="font-family:var(--font-body); font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:var(--color-neutral-700); font-variant-numeric:tabular-nums;">Seven Volumes</span>
+        <span style="width:48px; height:1px; background:var(--color-accent-500);"></span>
+      </div>
+    </div>
+
+    <!-- full-bleed issue mosaic -->
+    <div id="issues" style="display:grid; grid-template-columns:repeat(12, 1fr); gap:2px; padding:2px 0; background:var(--color-bg);">
+      <sc-for list="{{ issues }}" as="iss" hint-placeholder-count="7">
+        <div onClick="{{ iss.open }}" style="{{ iss.tileStyle }}">
+          <div style="{{ iss.tileImgStyle }}">
+            <image-slot class="mag-slot" id="{{ iss.coverId }}" src="{{ iss.coverSrc }}" shape="rect" fit="cover" placeholder="{{ iss.coverPlaceholder }}"></image-slot>
+          </div>
+          <div style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(to top, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.18) 100%);"></div>
+          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:clamp(6px, 1vw, 14px); padding:clamp(12px, 2.5vw, 32px); text-align:center; background:color-mix(in srgb, var(--color-bg) 93%, transparent); opacity:0; transition:opacity .35s ease; cursor:pointer; overflow:hidden;" style-hover="opacity:1;">
+            <div style="font-family:var(--font-body); font-size:clamp(8px, 1vw, 11px); letter-spacing:0.24em; text-transform:uppercase; color:var(--color-accent-700); font-variant-numeric:tabular-nums;">{{ iss.no }} &middot; {{ iss.season }}</div>
+            <div style="font-family:var(--font-heading); font-size:clamp(18px, 2.6vw, 42px); font-weight:500; line-height:1.04; color:var(--color-text);">{{ iss.title }}</div>
+            <p style="margin:0; max-width:44ch; font-size:clamp(11px, 1.3vw, 15px); line-height:1.55; color:var(--color-neutral-800); display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden;">{{ iss.desc }}</p>
+            <span style="margin-top:2px; font-family:var(--font-body); font-size:clamp(9px, 1vw, 12px); font-weight:600; letter-spacing:0.24em; text-transform:uppercase; color:var(--color-text); border-bottom:1px solid var(--color-accent-500); padding-bottom:3px;">View Issue</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- founder / dreamers section -->
+    <div style="position:relative; margin-top:2px; overflow:hidden; background:var(--color-bg);">
+      <img src="./uploads/Founder.jpg" alt="Marina Garabetian, Founder" style="display:block; width:100%; height:auto;">
+      <div style="{{ founderGradStyle }}"></div>
+      <div style="{{ founderTextStyle }}">
+        <div style="font-family:var(--font-body); font-size:11px; letter-spacing:0.3em; text-transform:uppercase; color:var(--color-accent-300); margin-bottom:18px;">From the Founder</div>
+        <h2 style="margin:0 0 22px; font-size:clamp(32px, 3.4vw, 56px); font-weight:500; line-height:1.04; letter-spacing:-0.01em; color:#fff;">We are all dreamers</h2>
+        <p style="margin:0; font-size:clamp(14px, 1.2vw, 17px); line-height:1.85; color:rgba(255,255,255,0.88);">We salute the wise ones who wear wrinkles like badges and the dreamers who have sadly left us with holes as big as the universe to fill. We celebrate all the dreams that make us who we are and who we want to be.</p>
+      </div>
+    </div>
+
+  <div style="background:#0d0c0b; color:#fff; margin-top:-2px;">
+  <div style="max-width:1440px; margin:0 auto; padding:72px 40px 40px;">
+
+    <!-- ══════════ CONTACT / REQUEST A COPY ══════════ -->
+    <div id="contact">
+      <div style="{{ contactGridStyle }}">
+        <h2 style="{{ coTitleStyle }}">Write <span style="font-style:italic; font-weight:400;">to us</span></h2>
+        <img src="./uploads/MODALINA_Logo_Black_TM.svg" alt="Modalina" style="{{ coLogoStyle }}">
+        <p style="{{ coTextStyle }}">Tell us which issue you would like and where to send it. We answer every note personally.</p>
+        <div style="{{ coAddrStyle }}">
+          299 Hespeler Road,<br>
+          Cambridge, ON N1R 3H8
+          <div style="margin-top:10px;">Phone: <a href="tel:+15197407720" style="text-decoration:none; color:var(--color-accent-300); border-bottom:1px solid var(--color-accent-400);">(519)&nbsp;740-7720</a></div>
+        </div>
+        <div style="{{ coFormStyle }}">
+        <sc-if value="{{ formSent }}" hint-placeholder-val="{{ false }}">
+          <div style="border:1px solid var(--color-accent-400); padding:40px; background:color-mix(in srgb, var(--color-accent-100) 55%, transparent);">
+            <div style="font-family:var(--font-body); text-transform:uppercase; letter-spacing:0.34em; font-size:11px; color:var(--color-accent-700); margin-bottom:14px;">Message received</div>
+            <div style="font-family:var(--font-heading); font-size:28px; line-height:1.08; margin-bottom:14px;">Thank you, {{ sentName }}.</div>
+            <p style="margin:0 0 14px; font-size:15px; line-height:1.75; color:var(--color-neutral-800);">Your request for <span style="font-style:italic;">{{ sentIssue }}</span> has reached our desk. A member of the Modalina team will write back personally, usually within two business days, to arrange your copy.</p>
+            <p style="margin:0; font-size:15px; line-height:1.75; color:var(--color-neutral-800);">With thanks for reading,<br><span style="font-family:var(--font-heading); font-size:19px;">The Editors, Modalina</span></p>
+            <button class="btn btn-secondary" style="margin-top:24px;" onClick="{{ resetForm }}">Send another</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ showForm }}" hint-placeholder-val="{{ true }}">
+        <form onSubmit="{{ submitForm }}" style="{{ formGridStyle }}">
+          <div class="field" style="display:flex; flex-direction:column; gap:7px;">
+            <label style="color:rgba(255,255,255,0.85);">Name</label>
+            <input class="input" name="name" required placeholder="Your full name" style="background:transparent; border-color:rgba(255,255,255,0.3); color:#fff;">
+          </div>
+          <div class="field" style="display:flex; flex-direction:column; gap:7px;">
+            <label style="color:rgba(255,255,255,0.85);">Email</label>
+            <input class="input" name="email" type="email" required placeholder="you@example.com" style="background:transparent; border-color:rgba(255,255,255,0.3); color:#fff;">
+          </div>
+          <div class="field" style="display:flex; flex-direction:column; gap:7px;">
+            <label style="color:rgba(255,255,255,0.85);">Phone</label>
+            <input class="input" name="phone" type="tel" placeholder="Optional" style="background:transparent; border-color:rgba(255,255,255,0.3); color:#fff;">
+          </div>
+          <div class="field" style="display:flex; flex-direction:column; gap:7px;">
+            <label style="color:rgba(255,255,255,0.85);">Location <span style="text-transform:none; letter-spacing:0; color:rgba(255,255,255,0.55);">(postal / zip code)</span></label>
+            <input class="input" name="location" placeholder="e.g. M5V 2T6" style="background:transparent; border-color:rgba(255,255,255,0.3); color:#fff;">
+          </div>
+          <div class="field" style="display:flex; flex-direction:column; gap:7px; grid-column:1 / -1;">
+            <label style="color:rgba(255,255,255,0.85);">Issue requested</label>
+            <select class="input" name="issue" required style="appearance:none; background-color:transparent; border-color:rgba(255,255,255,0.3); color:#fff; background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23b68235%22 stroke-width=%222%22><path d=%22M6 9l6 6 6-6%22/></svg>'); background-repeat:no-repeat; background-position:right 14px center; padding-right:40px;">
+              <option value="" disabled selected>Select an issue…</option>
+              <sc-for list="{{ issueOptions }}" as="opt" hint-placeholder-count="7">
+                <option value="{{ opt.value }}">{{ opt.label }}</option>
+              </sc-for>
+              <option value="No preference">No preference — surprise me</option>
+            </select>
+          </div>
+          <div class="field" style="display:flex; flex-direction:column; gap:7px; grid-column:1 / -1;">
+            <label style="color:rgba(255,255,255,0.85);">Message</label>
+            <textarea class="input" name="message" rows="4" placeholder="Anything you'd like us to know" style="resize:vertical; font-family:var(--font-body); background:transparent; border-color:rgba(255,255,255,0.3); color:#fff;"></textarea>
+          </div>
+          <div style="grid-column:1 / -1; display:flex; align-items:center; gap:18px; justify-content:{{ sendRowJustify }};">
+            <sc-if value="{{ formErrorMsg }}" hint-placeholder-val="{{ false }}">
+              <span style="font-family:var(--font-body); font-size:13px; color:#e2a1a1;">{{ formErrorMsg }}</span>
+            </sc-if>
+            <button type="submit" class="btn btn-primary" disabled="{{ sendDisabled }}" style="color:var(--color-accent-300); border-color:var(--color-accent-400);">{{ sendLabel }}</button>
+          </div>
+        </form>
+        </sc-if>
+        </div>
+      </div>
+    </div>
+
+    <!-- colophon -->
+    <div style="margin-top:clamp(32px, 8vw, 80px); border-top:1px solid rgba(255,255,255,0.15); padding-top:22px; display:flex; align-items:center; justify-content:center; gap:24px;">
+      <span style="width:28px; height:1px; background:var(--color-accent-500); flex:none;"></span>
+      <span style="font-family:var(--font-body); font-size:10.5px; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.65); text-align:center;">Modalina &middot; Cambridge, Ontario</span>
+      <span style="width:28px; height:1px; background:var(--color-accent-500); flex:none;"></span>
+    </div>
+    <div style="margin-top:14px; text-align:center; font-family:var(--font-body); font-size:12px; letter-spacing:0.04em; color:rgba(255,255,255,0.5);"><span style="white-space:nowrap;">Copyright &copy; 2026 | Modalina,</span> <span style="white-space:nowrap;">All Rights Reserved.</span></div>
+
+  </div>
+  </div>
+  </div>
+  </sc-if>
+  <sc-if value="{{ isReader }}" hint-placeholder-val="{{ false }}">
+  <div ref="{{ readerRef }}" style="position:relative; min-height:100vh; background:var(--color-neutral-900); color:var(--color-neutral-200); display:flex; flex-direction:column;">
+
+    <!-- reader header -->
+    <div style="position:sticky; top:0; z-index:50; background:var(--color-neutral-900); display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; padding:12px clamp(12px, 3vw, 28px); border-bottom:1px solid color-mix(in srgb, var(--color-accent-500) 45%, transparent);">
+      <button onClick="{{ goHome }}" style="all:unset; cursor:pointer; display:inline-flex; align-items:center; gap:8px; font-family:var(--font-body); font-size:12px; letter-spacing:0.16em; text-transform:uppercase; color:var(--color-accent-300);" style-hover="color:var(--color-accent-200);">
+        &larr;&nbsp;&nbsp;Archive
+      </button>
+      <div style="text-align:center;">
+        <div style="font-family:var(--font-body); font-size:10px; letter-spacing:0.34em; text-transform:uppercase; color:var(--color-neutral-500);">{{ current.no }} · {{ current.season }}</div>
+        <div style="font-family:var(--font-heading); font-size:clamp(17px, 2.4vw, 23px); font-style:italic; font-weight:400; margin-top:2px; color:var(--color-neutral-100);">{{ current.title }}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button onClick="{{ zoomOut }}" title="Zoom out" disabled="{{ zoomOutDisabled }}" style="all:unset; cursor:pointer; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border:1px solid color-mix(in srgb, #f8f4f4 20%, transparent); border-radius:var(--radius-md); color:var(--color-neutral-200); font-size:20px; line-height:1; opacity:{{ zoomOutOpacity }};" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);">−</button>
+        <span style="min-width:46px; text-align:center; font-family:var(--font-body); font-size:12px; letter-spacing:0.06em; color:var(--color-neutral-400); font-variant-numeric:tabular-nums;">{{ zoomPct }}</span>
+        <button onClick="{{ zoomIn }}" title="Zoom in" disabled="{{ zoomInDisabled }}" style="all:unset; cursor:pointer; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border:1px solid color-mix(in srgb, #f8f4f4 20%, transparent); border-radius:var(--radius-md); color:var(--color-neutral-200); font-size:18px; line-height:1; opacity:{{ zoomInOpacity }};" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);">+</button>
+        <button onClick="{{ toggleFullscreen }}" title="Fullscreen" style="all:unset; cursor:pointer; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border:1px solid color-mix(in srgb, #f8f4f4 20%, transparent); border-radius:var(--radius-md); color:var(--color-neutral-200);" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);">⤢</button>
+        <button onClick="{{ goHome }}" title="Close" style="all:unset; cursor:pointer; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border:1px solid color-mix(in srgb, #f8f4f4 20%, transparent); border-radius:var(--radius-md); color:var(--color-neutral-200); font-size:18px; line-height:1;" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);">✕</button>
+      </div>
+    </div>
+
+    <!-- issue description -->
+    <div style="text-align:center; padding:16px 24px 4px; max-width:640px; margin:0 auto;">
+      <p style="margin:0; font-family:var(--font-body); font-size:14px; line-height:1.7; color:var(--color-neutral-400); font-style:italic;">{{ current.desc }}</p>
+    </div>
+
+    <!-- book stage -->
+    <div ref="{{ stageRef }}" onMouseDown="{{ panStart }}" onTouchStart="{{ touchStart }}" onTouchEnd="{{ touchEnd }}" style="flex:1; display:flex; align-items:center; justify-content:center; overflow:auto; padding:clamp(8px, 2vw, 24px); cursor:{{ stageCursor }};">
+      <div style="{{ bookRowStyle }}">
+        <button onClick="{{ prev }}" title="Previous" style="{{ prevBtnStyle }}" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);"><span style="opacity:{{ prevOpacity }};">‹</span></button>
+
+        <sc-if value="{{ showBook }}" hint-placeholder-val="{{ true }}">
+        <div style="perspective:2600px; transition:transform .4s ease; transform:scale({{ zoomScale }}); transform-origin:center;">
+          <!-- book -->
+          <div style="position:relative; width:{{ stageW }}px; height:{{ pageH }}px;">
+            <!-- table / spine base -->
+            <div style="position:absolute; inset:0; background:var(--color-neutral-800); box-shadow:var(--shadow-lg); border-radius:2px;"></div>
+            <div style="position:absolute; left:50%; top:0; bottom:0; width:2px; transform:translateX(-1px); background:color-mix(in srgb,#000 45%,transparent); z-index:1;"></div>
+
+            <sc-if value="{{ pdfLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; inset:0; z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:color-mix(in srgb,#000 30%,transparent); backdrop-filter:blur(1px);">
+                <div style="width:34px; height:34px; border:2px solid color-mix(in srgb,#f8f4f4 25%,transparent); border-top-color:var(--color-accent-300); border-radius:50%; animation:modaSpin 0.9s linear infinite;"></div>
+                <div style="font-family:var(--font-body); font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--color-neutral-200); font-variant-numeric:tabular-nums;">{{ loadLabel }}</div>
+              </div>
+            </sc-if>
+
+            <sc-for list="{{ leaves }}" as="leaf" hint-placeholder-count="4">
+              <div style="{{ leaf.style }}">
+                <!-- front face -->
+                <div style="position:absolute; inset:0; z-index:2; backface-visibility:hidden; background:var(--color-bg); overflow:hidden;">
+                  <sc-if value="{{ leaf.frontShowSlot }}" hint-placeholder-val="{{ true }}">
+                    <image-slot class="mag-slot" id="{{ leaf.frontId }}" src="{{ leaf.frontSrc }}" shape="rect" fit="cover" placeholder="{{ leaf.frontPlaceholder }}"></image-slot>
+                  </sc-if>
+                  {{ leaf.frontEl }}
+                  <div style="position:absolute; inset:0; pointer-events:none; background:{{ leaf.frontGutter }};"></div>
+                  <div style="position:absolute; bottom:8px; right:12px; font-family:var(--font-body); font-size:10px; letter-spacing:0.1em; color:var(--color-neutral-600); background:color-mix(in srgb,#f8f4f4 70%,transparent); padding:1px 6px; border-radius:2px; font-variant-numeric:tabular-nums;">{{ leaf.frontNo }}</div>
+                </div>
+                <!-- back face -->
+                <div style="position:absolute; inset:0; z-index:1; backface-visibility:hidden; transform:rotateY(180deg); background:var(--color-bg); overflow:hidden;">
+                  <sc-if value="{{ leaf.backShowSlot }}" hint-placeholder-val="{{ true }}">
+                    <image-slot class="mag-slot" id="{{ leaf.backId }}" shape="rect" fit="cover" placeholder="{{ leaf.backPlaceholder }}"></image-slot>
+                  </sc-if>
+                  {{ leaf.backEl }}
+                  <div style="position:absolute; inset:0; pointer-events:none; background:{{ leaf.backGutter }};"></div>
+                  <div style="position:absolute; bottom:8px; left:12px; font-family:var(--font-body); font-size:10px; letter-spacing:0.1em; color:var(--color-neutral-600); background:color-mix(in srgb,#f8f4f4 70%,transparent); padding:1px 6px; border-radius:2px; font-variant-numeric:tabular-nums;">{{ leaf.backNo }}</div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ showMobPage }}" hint-placeholder-val="{{ false }}">
+        <div style="transition:transform .4s ease; transform:scale({{ zoomScale }}); transform-origin:center;">
+          <div style="position:relative; width:{{ mobW }}px; height:{{ mobH }}px; background:var(--color-bg); box-shadow:var(--shadow-lg); overflow:hidden; border-radius:2px;">
+            <sc-if value="{{ pdfLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="position:absolute; inset:0; z-index:600; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:color-mix(in srgb,#000 30%,transparent);">
+                <div style="width:34px; height:34px; border:2px solid color-mix(in srgb,#f8f4f4 25%,transparent); border-top-color:var(--color-accent-300); border-radius:50%; animation:modaSpin 0.9s linear infinite;"></div>
+                <div style="font-family:var(--font-body); font-size:12px; letter-spacing:0.18em; text-transform:uppercase; color:var(--color-neutral-200); font-variant-numeric:tabular-nums;">{{ loadLabel }}</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ mobShowSlot }}" hint-placeholder-val="{{ false }}">
+              <image-slot class="mag-slot" id="{{ mobSlotId }}" src="{{ mobSlotSrc }}" shape="rect" fit="cover" placeholder="Cover"></image-slot>
+            </sc-if>
+            {{ mobPageEl }}
+            <div style="position:absolute; bottom:8px; right:12px; font-family:var(--font-body); font-size:10px; letter-spacing:0.1em; color:var(--color-neutral-600); background:color-mix(in srgb,#f8f4f4 70%,transparent); padding:1px 6px; border-radius:2px; font-variant-numeric:tabular-nums;">{{ mobPageNo }}</div>
+          </div>
+        </div>
+        </sc-if>
+
+        <button onClick="{{ next }}" title="Next" style="{{ nextBtnStyle }}" style-hover="border-color:var(--color-accent-300); color:var(--color-accent-200);"><span style="opacity:{{ nextOpacity }};">›</span></button>
+      </div>
+    </div>
+
+    <!-- thumbnails strip -->
+    <div style="border-top:1px solid color-mix(in srgb, #f8f4f4 12%, transparent); padding:14px 20px 18px;">
+      <div style="display:flex; gap:10px; overflow-x:auto; padding:2px 4px; justify-content:center; min-height:66px;">
+        <sc-for list="{{ leaves }}" as="leaf" hint-placeholder-count="4">
+          <div onClick="{{ leaf.jump }}" title="{{ leaf.thumbTitle }}" style="{{ leaf.thumbStyle }}">
+            {{ leaf.thumbEl }}
+            <sc-if value="{{ leaf.thumbShowSlot }}" hint-placeholder-val="{{ true }}">
+              <image-slot class="mag-slot" id="{{ leaf.thumbId }}" src="{{ leaf.thumbSrc }}" shape="rect" fit="cover" placeholder=""></image-slot>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+      <div style="text-align:center; margin-top:8px; font-family:var(--font-body); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--color-neutral-500); font-variant-numeric:tabular-nums;">{{ spreadLabel }}</div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:900},&quot;pagesPerIssue&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:8,&quot;min&quot;:2,&quot;max&quot;:24,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Content&quot;,&quot;unit&quot;:&quot;pages&quot;}}">
+class Component extends DCLogic {
+  constructor(props){
+    super(props);
+    this.state = { view:'home', issue:0, flipped:0, zoom:1, flipping:-1, pdfLoad:null, formSent:false, sentName:'', sentIssue:'', heroIdx:3 };
+    this.readerRef = React.createRef();
+    this.stageRef = React.createRef();
+    this._panMove = this._panMove.bind(this);
+    this._panEnd = this._panEnd.bind(this);
+    this._pdfCache = {};
+    this._pdfLoading = false;
+    this._onKey = this._onKey.bind(this);
+  }
+  componentDidMount(){
+    window.addEventListener('keydown', this._onKey);
+    this._onResize=()=>this.forceUpdate(); window.addEventListener('resize', this._onResize);
+    this._heroTimer=setInterval(()=>{ if(this.state.view==='home') this.setState(s=>({ heroIdx:(s.heroIdx+1)%7 })); }, 6000);
+  }
+  componentWillUnmount(){ window.removeEventListener('keydown', this._onKey); window.removeEventListener('resize', this._onResize); clearInterval(this._heroTimer); }
+  _onKey(e){
+    if(this.state.view!=='reader') return;
+    if(e.key==='ArrowRight'){ e.preventDefault(); this.next(); }
+    else if(e.key==='ArrowLeft'){ e.preventDefault(); this.prev(); }
+    else if(e.key==='Escape' && !document.fullscreenElement){ this.goHome(); }
+  }
+
+  WEB3FORMS_KEY='34b9abad-2130-4165-a479-4bae57b17505';
+
+  getIssues(){
+    if(this._issues) return this._issues;
+    const enc=(p)=>encodeURI(p);
+    const data=[
+      {no:'Volume II', season:'Fall 2016',        title:'The Shift Disturbers',  cover:'uploads/VOLUME 2 - 2016 - Fall - Kyle Lowry.jpg',
+        blurb:'Kyle Lowry, unguarded.', pdf:'uploads/39774_MODALINA_guts_PRINT-low-compressed-bdb3e5ce.pdf', spreads:true, hero:'uploads/Hero-1.jpg',
+        desc:'The Shift Disturbers Edition — Kyle Lowry unguarded, with Tatiana Maslany, Zaha Hadid and the tech luminaries remaking the game.'},
+      {no:'Volume III', season:'Winter 2017–18',  title:'Icon[s]',               cover:'uploads/VOLUME 3 - 2017 - 2018 - Winter - Iris Apfel.jpg',
+        blurb:'Iris Apfel and the originals.', pdf:'uploads/MODALINA_Iris_Issue_FINAL_mh-low-compressed.pdf', hero:'uploads/Hero-2.jpg',
+        desc:'Icon[s] — Iris Apfel leads a roll call of originals: Frank Gehry, Keanu Reeves, Christian Louboutin and the little black dress.'},
+      {no:'Volume III', season:'Spring–Summer 2017', title:'Hits Close to Home', cover:'uploads/VOLUME 3 - 2017 - Spring - Summer - Ryan Gosling.jpg',
+        blurb:'Ryan Gosling comes home.', pdf:'uploads/Modalina_2017_Layout_FINAL_April25_FA-low-compressed.pdf', hero:'uploads/Hero-3.jpg',
+        desc:'Hits Close to Home — Ryan Gosling, Roberta Bondar, five hot new artists and the stories that land where we live.'},
+      {no:'Volume IV', season:'Winter 2018–19',   title:'[Re]actor[s]',          cover:'uploads/VOLUME 4 - 2018 - 2019 Spring - Winter - Matthew-Mcconaughey.jpg',
+        blurb:'Matthew McConaughey reacts.', pdf:'uploads/MODALINA_2018_AW_MagInterior_FA-lowfile-compressed.pdf', hero:'uploads/Hero-4.jpg',
+        desc:'[Re]actor[s] — Matthew McConaughey, Jean-Marc Vallée, cold-fusion fashion and the modern mixtape.'},
+      {no:'Volume IV', season:'Spring–Summer 2018', title:'Dreamer[s]',          cover:'uploads/VOLUME 4 - 2018 Spring - Summer -Sarah Gadon.jpg',
+        blurb:'Sarah Gadon dreams big.', pdf:'uploads/52994_MODALINA_2018_SS_April17th_FA-low-compressed (1).pdf', hero:'uploads/Hero-5.jpg',
+        desc:'Dreamer[s] — Sarah Gadon with the British invaders, smart-city planners, Jacques Cousteau and the paradise seekers.'},
+      {no:'Volume V', season:'Winter 2019–20',    title:'Saints',                cover:'uploads/VOLUME 5 - 2019 - 2020 - Winter - Joaquin Phoenix.jpg',
+        blurb:'Joaquin Phoenix, sinner & saint.', pdf:'uploads/MODALINA_2019_AW_MagInterior_Oct17-low-compressed.pdf', hero:'uploads/Hero-6.jpg',
+        desc:'Saints — Joaquin Phoenix, the climate-change warriors, all-electric supercars and the seven deadly sins, reimagined.'},
+      {no:'Volume V', season:'Spring–Summer 2019', title:'Breakthroughs',        cover:'uploads/VOLUME 5 - 2019 - Spring - Summer - Sandra Oh.jpg',
+        blurb:'Sandra Oh breaks through.', pdf:'uploads/MODALINA_2019_SS_MagInterior_FA_Signed-low-compressed-b.pdf', hero:'uploads/Hero-7.jpg',
+        desc:'Breakthroughs — Sandra Oh, lunar libations, the great gastronomers and the summer reads that changed everything.'},
+    ];
+    this._issues = data.map((d,i)=>({
+      ...d, id:`iss${i+1}`, coverId:`iss${i+1}-pg1`, megaId:`iss${i+1}-mega`, coverSrc:enc(d.cover), heroSrc:enc(d.hero||d.cover),
+      coverPlaceholder:'Cover', open:()=>this.open(i), fadeDelay:(i*0.07)+'s',
+      mobMegaId:`iss${i+1}-mobmega`, openMob:()=>{ this.setState({mobNav:false, mobIssues:false}); this.open(i); },
+      tileStyle:(()=>{ const mob=(window.innerWidth||1280)<720;
+        return { position:'relative', overflow:'hidden', cursor:'pointer', background:'var(--color-neutral-200)',
+          aspectRatio: mob ? (i===6?'16/10':'3/3.4') : (i<4?'3/3.2':'4/3'),
+          gridColumn: mob ? (i===6?'1 / -1':'span 6') : (i<4?'span 3':'span 4') }; })(),
+      tileImgStyle:{ position:'absolute', top:0, left:0, width:'100%', aspectRatio:'3/4' },
+    }));
+    return this._issues;
+  }
+
+  pagesFor(i){
+    const iss=this.getIssues()[i];
+    if(iss.pdf && this._pdfCache[i] && this._pdfCache[i].length) return this._pdfCache[i].slice();
+    return null;
+  }
+  pageCount(i){ const p=this.pagesFor(i); return p ? p.length : Math.max(2, this.props.pagesPerIssue ?? 8); }
+  leafCount(i){ return Math.ceil(this.pageCount(i)/2); }
+
+  open(i){
+    this._homeScroll = window.scrollY || document.documentElement.scrollTop || 0;
+    this.setState({ view:'reader', issue:i, flipped:0, zoom:1 }, ()=>window.scrollTo(0,0));
+    const iss=this.getIssues()[i];
+    if(iss.pdf && !this._pdfCache[i]) this.renderPdf(i);
+  }
+  goHome(){ this.setState({ view:'home' }, ()=>{ const y=this._homeScroll||0; requestAnimationFrame(()=>window.scrollTo(0,y)); }); }
+
+  async submitForm(e){
+    e.preventDefault();
+    const f=e.target;
+    const v=(n)=>((f[n]&&f[n].value)||'').trim();
+    const name=v('name')||'there';
+    const issue=v('issue')||'your issue';
+    const KEY=this.WEB3FORMS_KEY;
+    // Web3Forms delivery straight to marketing@raffiandco.com
+    if(KEY && KEY!=='PASTE_WEB3FORMS_ACCESS_KEY'){
+      this.setState({ formSending:true, formError:null });
+      const payload={
+        access_key:KEY,
+        subject:'Modalina',
+        from_name:'Modalina Website',
+        name:v('name'), email:v('email'), phone:v('phone'), location:v('location'),
+        issue_requested:v('issue'), message:v('message'),
+      };
+      try{
+        // Prefer our own server relay (works on staging domains Web3Forms blocks); fall back to direct API
+        let j=null;
+        try{
+          const r1=await fetch('/api/contact',{ method:'POST', headers:{'Content-Type':'application/json',Accept:'application/json'}, body:JSON.stringify(payload) });
+          if(r1.ok||r1.status===400) j=await r1.json();
+        }catch(_){}
+        if(!j){
+          const r2=await fetch('https://api.web3forms.com/submit',{ method:'POST', headers:{'Content-Type':'application/json',Accept:'application/json'}, body:JSON.stringify(payload) });
+          j=await r2.json();
+        }
+        if(!j.success) throw new Error(j.message||'send failed');
+        this.setState({ formSent:true, formSending:false, sentName:name, sentIssue:issue });
+        try{ f.reset(); }catch(_){}
+      }catch(err){
+        this.setState({ formSending:false, formError:'We couldn’t send that just now ('+(err&&err.message||'network error')+') — please email marketing@raffiandco.com directly.' });
+      }
+      return;
+    }
+    // Fallback until an access key is configured: open the visitor's mail app
+    const body=['A new copy request from the Modalina website:','',
+      'Name: '+v('name'),'Email: '+v('email'),'Phone: '+(v('phone')||'—'),
+      'Location: '+(v('location')||'—'),'Issue requested: '+v('issue'),
+      '','Message:',(v('message')||'—')].join('\n');
+    try{ window.location.href='mailto:marketing@raffiandco.com?subject='+encodeURIComponent('Modalina')+'&body='+encodeURIComponent(body); }catch(_){}
+    this.setState({ formSent:true, sentName:name, sentIssue:issue });
+    try{ f.reset(); }catch(_){}
+  }
+  resetForm(){ this.setState({ formSent:false }); }
+
+  async renderPdf(i){
+    if(this._pdfLoading || this._pdfCache[i]) return;
+    const iss=this.getIssues()[i];
+    if(!iss.pdf) return;
+    this._pdfLoading=true;
+    this.setState({ pdfLoad:{ i, done:0, total:0 } });
+    try{
+      const pdfjs=await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.min.mjs');
+      pdfjs.GlobalWorkerOptions.workerSrc='https://cdn.jsdelivr.net/npm/pdfjs-dist@4.7.76/build/pdf.worker.min.mjs';
+      const doc=await pdfjs.getDocument({ url:encodeURI(iss.pdf) }).promise;
+      const cv=document.createElement('canvas'), ctx=cv.getContext('2d');
+      const out=document.createElement('canvas'), octx=out.getContext('2d');
+      const urls=[];
+      const SCALE=1.15;
+      const crop=(sx,sy,sw,sh)=>{ out.width=Math.max(1,Math.round(sw)); out.height=Math.max(1,Math.round(sh)); octx.fillStyle='#fff'; octx.fillRect(0,0,out.width,out.height); octx.drawImage(cv, sx,sy,sw,sh, 0,0,out.width,out.height); return out.toDataURL('image/jpeg',0.72); };
+      // trim box = smallest page dims (a clean, already-trimmed single page)
+      let trimW=Infinity, trimH=Infinity;
+      if(iss.spreads){
+        for(let n=1;n<=doc.numPages;n++){ const vv=(await doc.getPage(n)).getViewport({scale:1}); trimW=Math.min(trimW,vv.width); trimH=Math.min(trimH,vv.height); }
+        trimW*=SCALE; trimH*=SCALE;
+      }
+      this.setState({ pdfLoad:{ i, done:0, total:doc.numPages } });
+      for(let n=1;n<=doc.numPages;n++){
+        const page=await doc.getPage(n);
+        const vp=page.getViewport({ scale:SCALE });
+        cv.width=Math.round(vp.width); cv.height=Math.round(vp.height);
+        ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height);
+        await page.render({ canvasContext:ctx, viewport:vp }).promise;
+        if(iss.spreads){
+          const insetY=Math.max(0,(cv.height-trimH)/2);
+          if(cv.width > trimW*1.5){ // landscape spread → left, right (outer bleed only)
+            const insetX=Math.max(0,(cv.width-2*trimW)/2);
+            urls.push(crop(insetX, insetY, trimW, trimH));
+            urls.push(crop(cv.width-insetX-trimW, insetY, trimW, trimH));
+          } else { // single page (trim off marks if oversized)
+            const insetX=Math.max(0,(cv.width-trimW)/2);
+            urls.push(crop(insetX, insetY, trimW, trimH));
+          }
+        } else {
+          urls.push(cv.toDataURL('image/jpeg',0.72));
+        }
+        if(n%2===0 || n===doc.numPages){ this._pdfCache[i]=urls.slice(); this.setState({ pdfLoad:{ i, done:n, total:doc.numPages } }); }
+      }
+      this._pdfCache[i]=urls;
+      this.setState({ pdfLoad:{ i, done:doc.numPages, total:doc.numPages } });
+    }catch(e){ this.setState({ pdfLoad:{ i, done:0, total:0, err:String(e&&e.message||e) } }); }
+    this._pdfLoading=false;
+  }
+
+  _isMob(){ return (window.innerWidth||1280)<720; }
+  next(){
+    if(this._isMob()){
+      const max=this.pageCount(this.state.issue)-1;
+      this.setState(s=> s.flipped>=max ? s : { flipped:s.flipped+1 });
+      return;
+    }
+    const lc=this.leafCount(this.state.issue);
+    this.setState(s=> s.flipped>=lc ? s : { flipped:s.flipped+1, flipping:s.flipped });
+    this._clearFlip();
+  }
+  prev(){
+    if(this._isMob()){
+      this.setState(s=> s.flipped<=0 ? s : { flipped:s.flipped-1 });
+      return;
+    }
+    this.setState(s=> s.flipped<=0 ? s : { flipped:s.flipped-1, flipping:s.flipped-1 });
+    this._clearFlip();
+  }
+  jump(target){
+    if(this._isMob()){ this.setState({ flipped:target*2 }); return; }
+    this.setState(s=> ({ flipped:target, flipping:Math.min(s.flipped,target) }));
+    this._clearFlip();
+  }
+  _clearFlip(){ clearTimeout(this._ft); this._ft=setTimeout(()=>this.setState({flipping:-1}),760); }
+
+  zoomIn(){ this.setState(s=>({ zoom: Math.min(5, Math.round((this._zf(s.zoom)+0.5)*100)/100) })); }
+  zoomOut(){ this.setState(s=>({ zoom: Math.max(1, Math.round((this._zf(s.zoom)-0.5)*100)/100) })); }
+  _zf(z){ return (typeof z==='number') ? z : 1; }
+  _navBtnStyle(isMobile, side){
+    const base={ all:'unset', cursor:'pointer', width:isMobile?'40px':'46px', height:isMobile?'40px':'46px', flex:'none',
+      display:'inline-flex', alignItems:'center', justifyContent:'center', borderRadius:'50%', fontSize:'20px',
+      border:'1px solid rgba(248,244,244,0.2)', color:'var(--color-neutral-200)', transition:'opacity .3s', boxSizing:'border-box' };
+    if(isMobile) Object.assign(base,{ position:'absolute', [side]:'-6px', top:'50%', transform:'translateY(-50%)', zIndex:700,
+      background:'rgba(13,12,11,0.55)', backdropFilter:'blur(2px)' });
+    return base;
+  }
+  panStart(e){
+    if(this._zf(this.state.zoom)<=1) return;
+    const el=this.stageRef.current; if(!el) return;
+    if(e.target.closest('button')) return;
+    e.preventDefault();
+    this._pan={ x:e.clientX, y:e.clientY, l:el.scrollLeft, t:el.scrollTop };
+    el.style.cursor='grabbing';
+    window.addEventListener('mousemove', this._panMove);
+    window.addEventListener('mouseup', this._panEnd);
+  }
+  _panMove(e){
+    const el=this.stageRef.current; if(!el||!this._pan) return;
+    el.scrollLeft=this._pan.l-(e.clientX-this._pan.x);
+    el.scrollTop=this._pan.t-(e.clientY-this._pan.y);
+  }
+  _panEnd(){
+    const el=this.stageRef.current; if(el) el.style.cursor='';
+    this._pan=null;
+    window.removeEventListener('mousemove', this._panMove);
+    window.removeEventListener('mouseup', this._panEnd);
+  }
+  toggleFullscreen(){
+    const el=this.readerRef.current; if(!el) return;
+    if(document.fullscreenElement){ document.exitFullscreen?.(); }
+    else { el.requestFullscreen?.(); }
+  }
+
+  buildLeaves(iss, i){
+    const lc=this.leafCount(i), flipped=this.state.flipped, flipping=this.state.flipping;
+    const iid=iss.id, leaves=[], coverSrc=iss.coverSrc;
+    const pages=this.pagesFor(i);        // null → placeholder slot mode
+    const imgMode=!!pages;
+    const gutterR="linear-gradient(to left, color-mix(in srgb,#000 26%,transparent) 0%, transparent 12%)";
+    const gutterL="linear-gradient(to right, color-mix(in srgb,#000 26%,transparent) 0%, transparent 12%)";
+    for(let k=0;k<lc;k++){
+      const isFlipped=k<flipped;
+      const p1=2*k+1, p2=2*k+2;
+      let z;
+      if(k===flipping) z=500;
+      else if(isFlipped) z=100+k;
+      else z=100+(lc-k);
+      const fImg = imgMode ? (pages[p1-1]||'') : '';
+      const bImg = imgMode ? (pages[p2-1]||'') : '';
+      const thumb = imgMode ? fImg : (k===0?coverSrc:'');
+      const imgStyle={ width:'100%', height:'100%', objectFit:'cover', display:'block' };
+      const mkImg=(src)=> src ? React.createElement('img',{src, alt:'', style:imgStyle}) : null;
+      leaves.push({
+        style:{ position:'absolute', left:'50%', top:0, width:'50%', height:'100%',
+          transformStyle:'preserve-3d', transformOrigin:'left center', zIndex:z,
+          transform:`rotateY(${isFlipped?-180:0}deg)`,
+          transition:'transform .72s cubic-bezier(.55,.02,.3,1)',
+          boxShadow: k===flipping ? '0 14px 40px color-mix(in srgb,#000 40%,transparent)' : 'none' },
+        frontId:`${iid}-pg${p1}`, backId:`${iid}-pg${p2}`,
+        frontSrc: k===0 ? coverSrc : '', backSrc:'',
+        frontShowSlot: !imgMode, backShowSlot: !imgMode,
+        frontEl: mkImg(fImg), backEl: mkImg(bImg),
+        frontNo:String(p1), backNo:String(p2),
+        frontPlaceholder: k===0 ? 'Cover' : `Page ${p1}`,
+        backPlaceholder:`Page ${p2}`,
+        frontGutter:gutterR, backGutter:gutterL,
+        jump:()=>this.jump(k), thumbTitle:`Pages ${p1}–${p2}`,
+        thumbShowSlot: !imgMode, thumbEl: mkImg(thumb),
+        thumbId:`${iid}-pg${p1}-thumb`, thumbSrc: k===0?coverSrc:'',
+        thumbStyle:(()=>{ const hl=this._isMob() ? k===Math.floor(flipped/2) : (k===flipped||k===flipped-1);
+          return { flex:'none', width:'44px', aspectRatio:'3/4', cursor:'pointer',
+          overflow:'hidden', border:'1px solid '+(hl?'var(--color-accent-400)':'color-mix(in srgb,#f8f4f4 18%,transparent)'),
+          outline:hl?'1px solid var(--color-accent-400)':'none',
+          borderRadius:'1px', transition:'border-color .3s' }; })()
+      });
+    }
+    return leaves;
+  }
+
+  renderVals(){
+    const issues=this.getIssues();
+    const st=this.state;
+    if(st.view!=='reader'){
+      const issueOptions=issues.map(x=>({ value:`${x.no} — ${x.title}`, label:`${x.no} — ${x.title}` }));
+      const mob=(window.innerWidth||1280)<720;
+      const hi=st.heroIdx%issues.length, hero=issues[hi];
+      const heroDots=issues.map((x,k)=>({
+        title:x.title, pick:()=>this.setState({heroIdx:k}),
+        style:{ all:'unset', cursor:'pointer', width:'9px', height:'9px', borderRadius:'50%', boxSizing:'border-box',
+          background: k===hi ? '#fff' : 'rgba(255,255,255,0.38)', border:'1px solid rgba(255,255,255,0.7)', transition:'background .3s' },
+      }));
+      return {
+        isHome:true, isReader:false, issues, issueOptions,
+        navStyle: mob?{display:'none'}:{display:'flex',alignItems:'center',gap:'36px'},
+        burgerStyle: mob?{all:'unset',cursor:'pointer',display:'inline-flex',flexDirection:'column',gap:'5px',padding:'8px'}:{display:'none'},
+        mobNavVisible: mob && !!st.mobNav,
+        toggleMobNav:()=>this.setState(s=>({mobNav:!s.mobNav})),
+        closeMobNav:()=>this.setState({mobNav:false, mobIssues:false}),
+        toggleMobIssues:()=>this.setState(s=>({mobIssues:!s.mobIssues})),
+        mobIssuesVisible: mob && !!st.mobNav && !!st.mobIssues,
+        mobIssuesGlyph: st.mobIssues?'−':'+',
+        megaGridStyle:{ maxWidth:'1440px', margin:'0 auto', padding:'28px 40px 32px', display:'grid',
+          gridTemplateColumns:`repeat(${(window.innerWidth||1280)<1080?3:7}, minmax(0,1fr))`, gap:'20px' },
+        contactGridStyle: mob?{display:'flex',flexDirection:'column'}:{display:'grid',gridTemplateColumns:'minmax(0,0.85fr) minmax(0,1.15fr)',columnGap:'56px',alignItems:'start'},
+        coTitleStyle:{fontSize:mob?'38px':'44px',fontWeight:500,lineHeight:1.02,margin:'0 0 20px',...(mob?{order:1,textAlign:'center'}:{gridColumn:'1'})},
+        coLogoStyle:{display:'block',height:'84px',width:'auto',margin:mob?'0 auto 30px':'0 0 24px',filter:'brightness(0) invert(1)',...(mob?{order:2}:{gridColumn:'1'})},
+        coFormStyle: mob?{order:3,margin:'0 0 36px'}:{gridColumn:'2',gridRow:'1 / span 4'},
+        coTextStyle:{margin:0,maxWidth:'38ch',fontSize:'16px',lineHeight:1.8,color:'rgba(255,255,255,0.82)',...(mob?{order:4,textAlign:'center',alignSelf:'center'}:{gridColumn:'1'})},
+        coAddrStyle:{marginTop:mob?'22px':'30px',paddingTop:'20px',borderTop:'1px solid rgba(255,255,255,0.18)',fontFamily:'var(--font-body)',fontSize:'15px',lineHeight:1.85,color:'rgba(255,255,255,0.82)',...(mob?{order:5,textAlign:'center'}:{gridColumn:'1'})},
+        formGridStyle:{display:'grid',gridTemplateColumns:mob?'1fr':'1fr 1fr',gap:'22px 24px'},
+        sendRowJustify: mob?'center':'flex-end',
+        heroBannerH: mob?'62vh':'92vh',
+        founderGradStyle:(window.innerWidth||1280)<720 ? { display:'none' }
+          : { position:'absolute', inset:0, background:'linear-gradient(to left, rgba(13,12,11,0.82) 0%, rgba(13,12,11,0.55) 30%, transparent 62%)' },
+        founderTextStyle:(window.innerWidth||1280)<720
+          ? { padding:'44px 26px 52px', background:'linear-gradient(to bottom, #2a2622 0%, #0d0c0b 72%)', borderBottom:'1px solid rgba(255,255,255,0.16)', color:'#fff' }
+          : { position:'absolute', top:'50%', right:'clamp(36px, 6vw, 110px)', transform:'translateY(-50%)', maxWidth:'min(46ch, 38vw)', color:'#fff' },
+        megaVisible:!!st.megaOpen,
+        megaOpen:()=>{ clearTimeout(this._megaT); this.setState({megaOpen:true}); },
+        megaClose:()=>{ clearTimeout(this._megaT); this._megaT=setTimeout(()=>this.setState({megaOpen:false}),180); },
+        heroEl:React.createElement('img',{ src:hero.heroSrc, alt:hero.title, style:{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover', objectPosition:'center 18%' } }),
+        heroTitle:hero.title, heroMeta:`${hero.no} · ${hero.season}`, heroDots,
+        showForm:!st.formSent, formSent:st.formSent, sentName:st.sentName, sentIssue:st.sentIssue,
+        formErrorMsg:st.formError||false, sendDisabled:st.formSending?true:null,
+        sendLabel:st.formSending?'Sending…':'Send request',
+        submitForm:(e)=>this.submitForm(e), resetForm:()=>this.resetForm(),
+      };
+    }
+    const cur=issues[st.issue];
+    const lc=this.leafCount(st.issue);
+    const leaves=this.buildLeaves(cur, st.issue);
+    // Desktop: ~150% bigger book, capped so the book + side arrows still fit the viewport
+    const vw=window.innerWidth||1280, vh=window.innerHeight||800;
+    const isMobile=vw<720;
+    const arrowRoom=isMobile?36:2*(46+22)+48;           // mobile: arrows overlay the book
+    const maxW=Math.max(isMobile?130:300, (vw-arrowRoom)/2);
+    const maxH=Math.max(isMobile?260:400, vh-(isMobile?230:300));
+    const pageW=Math.round(Math.min(vw>=1100?570:380, maxW, maxH*3/4));
+    const pageH=Math.round(pageW*4/3);
+    const pl=st.pdfLoad;
+    const cached=(this._pdfCache[st.issue]||[]).length;
+    const loading = !!cur.pdf && (!cached || (pl && pl.i===st.issue && pl.total>0 && pl.done<pl.total) || (pl && pl.total===0 && !pl.err));
+    let loadLabel='Loading magazine…';
+    if(pl && pl.err) loadLabel='Could not load — '+pl.err;
+    else if(pl && pl.total>0) loadLabel=`Rendering pages… ${pl.done} / ${pl.total}`;
+    // Mobile: single-page view, as large as fits
+    const pages=this.pagesFor(st.issue);
+    const pc=this.pageCount(st.issue);
+    const mobPageIdx=Math.min(st.flipped, pc-1);
+    const mobW=Math.round(Math.min(vw-40, (vh-250)*3/4));
+    const mobH=Math.round(mobW*4/3);
+    const mobSrc=pages ? (pages[mobPageIdx]||'') : '';
+    return {
+      isHome:false, isReader:true, issues,
+      current:cur, leaves,
+      readerRef:this.readerRef,
+      pageH, stageW:pageW*2,
+      showBook:!isMobile, showMobPage:isMobile,
+      mobW, mobH,
+      mobShowSlot: isMobile && !pages && mobPageIdx===0,
+      mobSlotId:`${cur.id}-pg1`, mobSlotSrc:cur.coverSrc,
+      mobPageEl: (isMobile && mobSrc) ? React.createElement('img',{src:mobSrc, alt:'', style:{width:'100%',height:'100%',objectFit:'cover',display:'block'}}) : null,
+      mobPageNo:String(mobPageIdx+1),
+      pdfLoading:loading, loadLabel,
+      zoomScale:this._zf(st.zoom), zoomPct:Math.round(this._zf(st.zoom)*100)+'%',
+      stageRef:this.stageRef, stageCursor:this._zf(st.zoom)>1?'grab':'default', panStart:(e)=>this.panStart(e),
+      touchStart:(e)=>{ if(this._zf(this.state.zoom)>1) return; const t=e.touches[0]; this._sw={x:t.clientX, y:t.clientY}; },
+      touchEnd:(e)=>{ if(!this._sw) return; const t=e.changedTouches[0]; const dx=t.clientX-this._sw.x, dy=t.clientY-this._sw.y; this._sw=null;
+        if(Math.abs(dx)>56 && Math.abs(dx)>Math.abs(dy)*1.5){ dx<0?this.next():this.prev(); } },
+      bookRowStyle: isMobile
+        ? { position:'relative', display:'flex', alignItems:'center', justifyContent:'center' }
+        : { display:'flex', alignItems:'center', gap:'22px' },
+      prevBtnStyle: this._navBtnStyle(isMobile,'left'),
+      nextBtnStyle: this._navBtnStyle(isMobile,'right'),
+      zoomInDisabled:this._zf(st.zoom)>=5?true:null, zoomOutDisabled:this._zf(st.zoom)<=1?true:null,
+      zoomInOpacity:this._zf(st.zoom)>=5?0.35:1, zoomOutOpacity:this._zf(st.zoom)<=1?0.35:1,
+      prev:()=>this.prev(), next:()=>this.next(),
+      goHome:()=>this.goHome(), zoomIn:()=>this.zoomIn(), zoomOut:()=>this.zoomOut(), toggleFullscreen:()=>this.toggleFullscreen(),
+      prevOpacity: st.flipped<=0?0.3:1,
+      nextOpacity: (isMobile ? st.flipped>=pc-1 : st.flipped>=lc)?0.3:1,
+      spreadLabel: isMobile
+        ? (mobPageIdx===0 ? 'Cover' : `Page ${mobPageIdx+1} of ${pc}`)
+        : (st.flipped===0 ? 'Cover' : (st.flipped>=lc ? 'Back cover' : `Pages ${2*st.flipped}–${2*st.flipped+1}`)),
+    };
+  }
+}
+</script>
+</body>
+</html>
